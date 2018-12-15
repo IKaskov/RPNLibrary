@@ -17,8 +17,8 @@ namespace RPNLibrary
             {
                 string cur = s[i];
 
-                if (IsNum(cur))
-                //if(Double.TryParse(cur, out double num))
+                //if (IsNum(cur))
+                if (Double.TryParse(cur, out double num))
                     res.Add(cur);
                 else
                 {
@@ -46,18 +46,52 @@ namespace RPNLibrary
             return res;
         }
 
-        public static double CalculateRPN(List<string> temp)
+        public static double CalculateRPN(string inputStr)
         {
-            List<string> s = GetRPNFromList(temp);
+            List<string> resList = new List<string>();
+            string num = string.Empty;
+
+            for (int i = 0; i < inputStr.Length; i++)
+            {
+                char c = inputStr[i];
+
+                if (IsSqrt(inputStr, out double SqrtRes, ref i))
+                {
+                    resList.Add(SqrtRes.ToString());
+                    continue;
+                }
+
+                if (Char.IsDigit(c) || c == ',' || c == '.')
+                    num += c;
+                else if ((i == 0 && c == '-')
+                    || (c == '-' && !Char.IsDigit(inputStr[i - 1])))
+                    num += c.ToString();
+                else
+                {
+                    if (num != "")
+                        resList.Add(num);
+                    resList.Add(c.ToString());
+                    num = string.Empty;
+                }
+            }
+            if (num != "")
+                resList.Add(num);
+
+            return CalculateRPN(resList);
+        }
+
+        public static double CalculateRPN(List<string> inputList)
+        {
+            List<string> RPNList = GetRPNFromList(inputList);
             Stack<double> nums = new Stack<double>();
 
             double n1, n2;
 
-            foreach (var i in s)
+            foreach (var i in RPNList)
             {
-                if (IsNum(i))
-                //if(Double.TryParse(i,out double num))
-                    nums.Push(Convert.ToDouble( i));
+                //if (IsNum(i))
+                if (Double.TryParse(i, out double num))
+                    nums.Push(Convert.ToDouble(i));
                 else
                 {
                     n1 = nums.Pop();
@@ -67,6 +101,31 @@ namespace RPNLibrary
             }
 
             return nums.Pop();
+        }
+
+        private static bool IsSqrt(string inputStr, out double res, ref int iterator)
+        {
+            string sqrt = "SQRT(";
+            res = 0;
+
+            if (inputStr[iterator] == sqrt[0]
+                && inputStr.Substring(iterator, sqrt.Length).ToUpper() == sqrt)
+            {
+                string sqrtNum = string.Empty;
+                iterator += sqrt.Length;
+
+                while (inputStr[iterator] != ')')
+                {
+                    sqrtNum += inputStr[iterator];
+                    iterator++;
+                }
+
+                res = Math.Sqrt(Double.Parse(sqrtNum));
+
+                return true;
+            }
+
+            return false;
         }
 
         static double ApplyOperation(string op, double n1, double n2)
