@@ -10,6 +10,9 @@ namespace RPNLibrary
     {
         internal static List<string> GetRPNFromList(List<string> s)
         {
+            if (s.Count == 1)
+                return s;
+
             Stack<string> op = new Stack<string>();
             List<string> res = new List<string>();
 
@@ -51,6 +54,10 @@ namespace RPNLibrary
             List<string> resList = new List<string>();
             string num = string.Empty;
 
+            if (!Char.IsDigit(inputStr.Last()) && inputStr.Last() != ')')
+                inputStr = inputStr.TrimEnd(inputStr.Last());
+
+
             for (int i = 0; i < inputStr.Length; i++)
             {
                 char c = inputStr[i];
@@ -64,7 +71,7 @@ namespace RPNLibrary
                 if (Char.IsDigit(c) || c == ',' || c == '.')
                     num += c;
                 else if ((i == 0 && c == '-')
-                    || (c == '-' && !Char.IsDigit(inputStr[i - 1])))
+                    || (c == '-' && !Char.IsDigit(inputStr[i - 1]) && inputStr[i - 1] != ')'))
                     num += c.ToString();
                 else
                 {
@@ -83,6 +90,10 @@ namespace RPNLibrary
         public static double CalculateRPN(List<string> inputList)
         {
             List<string> RPNList = GetRPNFromList(inputList);
+
+            if (RPNList.Count == 1)
+                return Double.Parse(RPNList.First());
+
             Stack<double> nums = new Stack<double>();
 
             double n1, n2;

@@ -69,5 +69,23 @@ namespace RPNLibrary
         {
             Assert.AreEqual(4, RPN.CalculateRPN("-2^2"));
         }
+
+        [Test]
+        public static void TestOperations9()
+        {
+            Assert.AreEqual(15, RPN.CalculateRPN("9+6+"));
+        }
+        
+        [Test]
+        public static void TestOperations10()
+        {
+            Assert.AreEqual(3, RPN.CalculateRPN("Sqrt(9)"));
+        }
+
+        [Test]
+        public static void TestOperations11()
+        {
+            Assert.AreEqual(3, RPN.CalculateRPN("9+Sqrt(9)-9"));
+        }
     }
 }
